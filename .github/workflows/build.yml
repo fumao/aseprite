@@ -7,13 +7,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        build_type: [Release]
+        build_type: [RelWithDebInfo]
         ui: [gui, cli]
         scripting: [lua, noscripts]
         exclude:
-          - build_type: Release
+          - build_type: RelWithDebInfo
             ui: cli
-          - build_type: Release
+          - build_type: RelWithDebInfo
             scripting: noscripts
     steps:
     - uses: actions/checkout@v4
@@ -90,5 +90,5 @@ jobs:
       with:
         name: aseprite
         path: |
-          D:/a/aseprite/aseprite/build/bin/data
-          D:/a/aseprite/aseprite/build/bin/aseprite.exe
+          $PWD/build/bin/data
+          $PWD/build/bin/aseprite.exe
