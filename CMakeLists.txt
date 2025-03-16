@@ -23,8 +23,35 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/laf/cmake/cxx
 project(aseprite C CXX)
 
 # Check repository status
-if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/laf/CMakeLists.txt)
-  message(FATAL_ERROR "Your Aseprite repository is incomplete, initialize submodules using:\n  git submodule update --init --recursive")
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/laf/CMakeLists.txt" OR
+   NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/laf/clip/CMakeLists.txt")
+  message(FATAL_ERROR
+    "Your Aseprite repository looks incomplete. Please read the following "
+    "instructions carefully:"
+    "\n"
+    "1) If you have downloaded Aseprite source using the "
+    "\"Code > Download ZIP\" button from GitHub, you will not be able to "
+    "compile Aseprite. You need to get the code with other methods (continue "
+    "reading)."
+    "\n"
+    "2) You can correctly clone the GitHub repository with the "
+    "\"--recursive\" argument:"
+    "\n"
+    "  git clone --recursive https://github.com/aseprite/aseprite.git"
+    "\n"
+    "3) If you have already cloned the repository and see this message, "
+    "you still need to initialize submodules running the following command:"
+    "\n"
+    "  git submodule update --init --recursive"
+    "\n"
+    "4) Or if you want to download the full source code in a .zip file, "
+    "go to the releases page and get the latest \"Aseprite-v1.x-Source.zip\":"
+    "\n"
+    "  https://github.com/aseprite/aseprite/releases"
+    "\n"
+    "More information in the building instructions:"
+    "\n"
+    "  https://github.com/aseprite/aseprite/blob/main/INSTALL.md#get-the-source-code")
 endif()
 
 # This is required for KDE/Qt destop integration, which sets
@@ -43,6 +70,7 @@ option(USE_SHARED_GIFLIB  "Use your installed copy of giflib" off)
 option(USE_SHARED_JPEGLIB "Use your installed copy of jpeglib" off)
 option(USE_SHARED_ZLIB    "Use your installed copy of zlib" off)
 option(USE_SHARED_LIBPNG  "Use your installed copy of libpng" off)
+option(USE_SHARED_TINYEXIF "Use your installed copy of TinyEXIF" off)
 option(USE_SHARED_TINYXML "Use your installed copy of tinyxml" off)
 option(USE_SHARED_PIXMAN  "Use your installed copy of pixman" off)
 option(USE_SHARED_FREETYPE "Use shared FreeType library" off)
@@ -165,6 +193,7 @@ set(PIXMAN_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/third_party/pixman)
 set(FREETYPE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/freetype2)
 set(HARFBUZZ_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/harfbuzz)
 set(SIMPLEINI_DIR       ${CMAKE_CURRENT_SOURCE_DIR}/third_party/simpleini)
+set(TINYEXIF_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/TinyEXIF)
 set(TINYXML_DIR         ${CMAKE_CURRENT_SOURCE_DIR}/third_party/tinyxml2)
 set(ZLIB_DIR            ${CMAKE_CURRENT_SOURCE_DIR}/third_party/zlib)
 
@@ -200,12 +229,12 @@ endif()
 if(USE_SHARED_ZLIB)
   find_package(ZLIB REQUIRED)
 else()
-  set(ZLIB_FOUND)
+  set(ZLIB_FOUND ON)
   set(ZLIB_LIBRARY zlibstatic)
   set(ZLIB_LIBRARIES ${ZLIB_LIBRARY})
   set(ZLIB_INCLUDE_DIRS
     ${ZLIB_DIR}
-    ${CMAKE_BINARY_DIR}/third_party/zlib) # Zlib generated zconf.h file
+    ${CMAKE_CURRENT_BINARY_DIR}/third_party/zlib) # Zlib generated zconf.h file
   set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS} CACHE PATH "")
 endif()
 include_directories(${ZLIB_INCLUDE_DIRS})
@@ -236,6 +265,16 @@ else()
   set(TINYXML_INCLUDE_DIR ${TINYXML_DIR})
 endif()
 include_directories(${TINYXML_INCLUDE_DIR})
+
+# TinyEXIF
+if(USE_SHARED_TINYEXIF)
+  find_library(TINYEXIF_LIBRARY NAMES TinyEXIF)
+  find_path(TINYEXIF_INCLUDE_DIR NAMES TinyEXIF.h)
+else()
+  set(TINYEXIF_LIBRARY TinyEXIFstatic)
+  set(TINYEXIF_INCLUDE_DIR ${TINYEXIF_DIR})
+endif()
+include_directories(${TINYEXIF_INCLUDE_DIR})
 
 # pixman
 if(USE_SHARED_PIXMAN)
