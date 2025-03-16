@@ -90,10 +90,5 @@ jobs:
       with:
         name: aseprite
         path: |
-          if [[ "${{ runner.os }}" == "Windows" ]] ; then
-            D:/a/aseprite/aseprite/build/bin/data
-            D:/a/aseprite/aseprite/build/bin/aseprite.exe
-          else
-            build/bin/data
-            build/bin/aseprite
-          fi
+          build/bin/data/
+          build/bin/aseprite*
