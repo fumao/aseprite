@@ -1,12 +1,12 @@
 // Aseprite UI Library
-// Copyright (C) 2018-2024  Igara Studio S.A.
+// Copyright (C) 2018-2025  Igara Studio S.A.
 // Copyright (C) 2001-2018  David Capello
 //
 // This file is released under the terms of the MIT license.
 // Read LICENSE.txt for more information.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "ui/system.h"
@@ -40,15 +40,13 @@ bool multi_displays = false;
 // Current mouse cursor type.
 static CursorType mouse_cursor_type = kOutsideDisplay;
 static const Cursor* mouse_cursor_custom = nullptr;
-static const Cursor* mouse_cursor = nullptr;
 static Display* mouse_display = nullptr;
 static bool use_native_mouse_cursor = true;
 
 // Mouse information
 static int mouse_cursor_scale = 1;
 
-static bool set_native_cursor_on_all_displays(Display* display,
-                                              const Cursor* cursor)
+static bool set_native_cursor_on_all_displays(Display* display, const Cursor* cursor)
 {
   bool result = false;
   while (display) {
@@ -72,8 +70,7 @@ static bool set_native_cursor_on_all_displays(Display* display,
   return result;
 }
 
-static bool set_native_cursor_on_all_displays(Display* display,
-                                              const os::NativeCursor cursor)
+static bool set_native_cursor_on_all_displays(Display* display, const os::NativeCursor cursor)
 {
   bool result = false;
   while (display) {
@@ -99,40 +96,27 @@ static void update_mouse_cursor()
   os::NativeCursor nativeCursor = os::NativeCursor::Hidden;
   const Cursor* cursor = nullptr;
 
-  if (use_native_mouse_cursor ||
-      mouse_cursor_type == kOutsideDisplay) {
+  if (use_native_mouse_cursor || mouse_cursor_type == kOutsideDisplay) {
     switch (mouse_cursor_type) {
-      case ui::kOutsideDisplay:
-        nativeCursor = os::NativeCursor::Arrow;
-        break;
-      case ui::kNoCursor: break;
+      case ui::kOutsideDisplay:  nativeCursor = os::NativeCursor::Arrow; break;
+      case ui::kNoCursor:        break;
       case ui::kArrowCursor:
-      case ui::kArrowPlusCursor:
-        nativeCursor = os::NativeCursor::Arrow;
-        break;
-      case ui::kCrosshairCursor:
-        nativeCursor = os::NativeCursor::Crosshair;
-        break;
-      case ui::kForbiddenCursor:
-        nativeCursor = os::NativeCursor::Forbidden;
-        break;
-      case ui::kHandCursor:
-        nativeCursor = os::NativeCursor::Link;
-        break;
+      case ui::kArrowPlusCursor: nativeCursor = os::NativeCursor::Arrow; break;
+      case ui::kCrosshairCursor: nativeCursor = os::NativeCursor::Crosshair; break;
+      case ui::kForbiddenCursor: nativeCursor = os::NativeCursor::Forbidden; break;
+      case ui::kHandCursor:      nativeCursor = os::NativeCursor::Link; break;
       case ui::kScrollCursor:
-      case ui::kMoveCursor:
-        nativeCursor = os::NativeCursor::Move;
-        break;
-      case ui::kSizeNSCursor: nativeCursor = os::NativeCursor::SizeNS; break;
-      case ui::kSizeWECursor: nativeCursor = os::NativeCursor::SizeWE; break;
-      case ui::kSizeNCursor: nativeCursor = os::NativeCursor::SizeN; break;
-      case ui::kSizeNECursor: nativeCursor = os::NativeCursor::SizeNE; break;
-      case ui::kSizeECursor: nativeCursor = os::NativeCursor::SizeE; break;
-      case ui::kSizeSECursor: nativeCursor = os::NativeCursor::SizeSE; break;
-      case ui::kSizeSCursor: nativeCursor = os::NativeCursor::SizeS; break;
-      case ui::kSizeSWCursor: nativeCursor = os::NativeCursor::SizeSW; break;
-      case ui::kSizeWCursor: nativeCursor = os::NativeCursor::SizeW; break;
-      case ui::kSizeNWCursor: nativeCursor = os::NativeCursor::SizeNW; break;
+      case ui::kMoveCursor:      nativeCursor = os::NativeCursor::Move; break;
+      case ui::kSizeNSCursor:    nativeCursor = os::NativeCursor::SizeNS; break;
+      case ui::kSizeWECursor:    nativeCursor = os::NativeCursor::SizeWE; break;
+      case ui::kSizeNCursor:     nativeCursor = os::NativeCursor::SizeN; break;
+      case ui::kSizeNECursor:    nativeCursor = os::NativeCursor::SizeNE; break;
+      case ui::kSizeECursor:     nativeCursor = os::NativeCursor::SizeE; break;
+      case ui::kSizeSECursor:    nativeCursor = os::NativeCursor::SizeSE; break;
+      case ui::kSizeSCursor:     nativeCursor = os::NativeCursor::SizeS; break;
+      case ui::kSizeSWCursor:    nativeCursor = os::NativeCursor::SizeSW; break;
+      case ui::kSizeWCursor:     nativeCursor = os::NativeCursor::SizeW; break;
+      case ui::kSizeNWCursor:    nativeCursor = os::NativeCursor::SizeNW; break;
     }
   }
 
@@ -148,8 +132,7 @@ static void update_mouse_cursor()
   }
 
   // Use a custom cursor
-  if (nativeCursor == os::NativeCursor::Hidden &&
-      mouse_cursor_type != ui::kOutsideDisplay) {
+  if (nativeCursor == os::NativeCursor::Hidden && mouse_cursor_type != ui::kOutsideDisplay) {
     if (get_theme() && mouse_cursor_type != ui::kCustomCursor)
       cursor = get_theme()->getStandardCursor(mouse_cursor_type);
     else
@@ -157,8 +140,7 @@ static void update_mouse_cursor()
   }
 
   // Try to use a custom native cursor if it's possible.
-  if (mouse_display &&
-      nativeCursor == os::NativeCursor::Hidden) {
+  if (mouse_display && nativeCursor == os::NativeCursor::Hidden) {
     update_custom_native_cursor(cursor);
   }
 }
@@ -171,8 +153,7 @@ UISystem* UISystem::instance()
   return g_instance;
 }
 
-UISystem::UISystem()
-  : m_clipboardDelegate(nullptr)
+UISystem::UISystem() : m_clipboardDelegate(nullptr), m_translationDelegate(this)
 {
   ASSERT(!g_instance);
   g_instance = this;
@@ -249,8 +230,7 @@ CursorType get_mouse_cursor()
 
 void set_mouse_cursor(CursorType type, const Cursor* cursor)
 {
-  if (mouse_cursor_type == type &&
-      mouse_cursor_custom == cursor)
+  if (mouse_cursor_type == type && mouse_cursor_custom == cursor)
     return;
 
   mouse_cursor_type = type;
@@ -280,8 +260,7 @@ gfx::Point get_mouse_position()
   return os::System::instance()->mousePosition();
 }
 
-void set_mouse_position(const gfx::Point& newPos,
-                        Display* display)
+void set_mouse_position(const gfx::Point& newPos, Display* display)
 {
   if (display && display != mouse_display)
     _internal_set_mouse_display(display);
@@ -299,6 +278,14 @@ void execute_from_ui_thread(std::function<void()>&& func)
   ev.setType(os::Event::Callback);
   ev.setCallback(std::move(func));
   os::queue_event(ev);
+}
+
+void execute_now_or_enqueue(std::function<void()>&& func)
+{
+  if (is_ui_thread())
+    func();
+  else
+    execute_from_ui_thread(std::move(func));
 }
 
 bool is_ui_thread()

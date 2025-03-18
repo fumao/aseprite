@@ -141,6 +141,11 @@
       <value id="EIGHT_BIT" value="0" />
       <value id="PERCENTAGE" value="1" />
     </enum>
+    <enum id="CelContentFormat">
+      <value id="COMPRESSED" value="0" />
+      <value id="KEEP_AS_IS" value="1" />
+      <value id="RAW_IMAGE" value="2" />
+    </enum>
   </types>
 
   <global>
@@ -161,6 +166,7 @@
       <option id="keep_closed_sprite_on_memory" type="bool" default="true" />
       <option id="keep_closed_sprite_on_memory_for" type="double" default="15.0" />
       <option id="show_full_path" type="bool" default="true" />
+      <option id="edit_full_path" type="bool" default="false" />
       <option id="timeline_position" type="TimelinePosition" default="TimelinePosition::BOTTOM" />
       <option id="timeline_layer_panel_width" type="int" default="100" />
       <option id="show_menu_bar" type="bool" default="true" />
@@ -220,6 +226,7 @@
       <option id="cursor_color" type="app::Color" default="app::Color::fromMask()" />
       <option id="painting_cursor_type" type="PaintingCursorType" default="PaintingCursorType::CROSSHAIR_ON_SPRITE" />
       <option id="brush_preview" type="BrushPreview" default="BrushPreview::FULL" />
+      <option id="brush_preview_in_preview" type="bool" default="false" />
       <option id="snap_to_grid" type="bool" default="false" />
     </section>
     <section id="preview" text="Preview">
@@ -458,6 +465,9 @@
     <section id="tilemap">
       <option id="show_delete_unused_tileset_alert" type="bool" default="true" />
     </section>
+    <section id="aseprite_format">
+      <option id="cel_format" type="CelContentFormat" default="CelContentFormat::COMPRESSED" />
+    </section>
   </global>
 
   <tool>
@@ -614,7 +624,6 @@
       <option id="grid" type="bool" default="false" />
       <option id="pixel_grid" type="bool" default="false" />
       <option id="brush_preview" type="bool" default="true" />
-      <option id="brush_preview_in_preview" type="bool" default="false" />
       <option id="slices" type="bool" default="true" />
       <option id="auto_guides" type="bool" default="true" />
       <option id="tile_numbers" type="bool" default="true" />

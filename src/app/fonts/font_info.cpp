@@ -1,14 +1,15 @@
 // Aseprite
-// Copyright (c) 2024  Igara Studio S.A.
+// Copyright (c) 2024-2025  Igara Studio S.A.
 //
 // This program is distributed under the terms of
 // the End-User License Agreement for Aseprite.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
-#include "app/font_info.h"
+#include "app/fonts/font_info.h"
+
 #include "app/pref/preferences.h"
 #include "base/fs.h"
 #include "base/split_string.h"
@@ -16,8 +17,8 @@
 #include "text/font_mgr.h"
 #include "text/font_style_set.h"
 
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #include <vector>
 
 namespace app {
@@ -49,9 +50,7 @@ FontInfo::FontInfo(const FontInfo& other,
 
 std::string FontInfo::title() const
 {
-  return m_type == FontInfo::Type::File ?
-    base::get_file_name(m_name):
-    m_name;
+  return m_type == FontInfo::Type::File ? base::get_file_name(m_name) : m_name;
 }
 
 std::string FontInfo::thumbnailId() const
@@ -85,12 +84,12 @@ FontInfo FontInfo::getFromPreferences()
 
   // Old configuration
   if (!pref.textTool.fontFace().empty()) {
-    fontInfo = FontInfo(FontInfo::Type::File,
-                        pref.textTool.fontFace(),
-                        pref.textTool.fontSize(),
-                        text::FontStyle(),
-                        pref.textTool.antialias() ? FontInfo::Flags::Antialias :
-                                                    FontInfo::Flags::None);
+    fontInfo = FontInfo(
+      FontInfo::Type::File,
+      pref.textTool.fontFace(),
+      pref.textTool.fontSize(),
+      text::FontStyle(),
+      pref.textTool.antialias() ? FontInfo::Flags::Antialias : FontInfo::Flags::None);
   }
   // New configuration
   if (!pref.textTool.fontInfo().empty()) {
@@ -118,12 +117,8 @@ std::string FontInfo::humanString() const
   switch (type()) {
     case app::FontInfo::Type::Unknown:
     case app::FontInfo::Type::Name:
-    case app::FontInfo::Type::System:
-      result = name();
-      break;
-    case app::FontInfo::Type::File:
-      result = base::get_file_name(name());
-      break;
+    case app::FontInfo::Type::System:  result = name(); break;
+    case app::FontInfo::Type::File:    result = base::get_file_name(name()); break;
   }
   result += fmt::format(" {}pt", size());
   if (!result.empty()) {
@@ -143,7 +138,8 @@ std::string FontInfo::humanString() const
 
 namespace base {
 
-template<> app::FontInfo convert_to(const std::string& from)
+template<>
+app::FontInfo convert_to(const std::string& from)
 {
   std::vector<std::string> parts;
   base::split_string(from, parts, ",");
@@ -164,11 +160,11 @@ template<> app::FontInfo convert_to(const std::string& from)
       type = app::FontInfo::Type::System;
       name = parts[0].substr(7);
     }
-    else {
+    else if (!parts[0].empty()) {
       type = app::FontInfo::Type::Name;
       name = parts[0];
     }
-    for (int i=1; i<parts.size(); ++i) {
+    for (int i = 1; i < parts.size(); ++i) {
       if (parts[i] == "antialias")
         flags |= app::FontInfo::Flags::Antialias;
       else if (parts[i] == "ligatures")
@@ -184,29 +180,27 @@ template<> app::FontInfo convert_to(const std::string& from)
   }
 
   text::FontStyle style;
-  if (bold && italic) style = text::FontStyle::BoldItalic();
-  else if (bold) style = text::FontStyle::Bold();
-  else if (italic) style = text::FontStyle::Italic();
+  if (bold && italic)
+    style = text::FontStyle::BoldItalic();
+  else if (bold)
+    style = text::FontStyle::Bold();
+  else if (italic)
+    style = text::FontStyle::Italic();
 
   return app::FontInfo(type, name, size, style, flags);
 }
 
-template<> std::string convert_to(const app::FontInfo& from)
+template<>
+std::string convert_to(const app::FontInfo& from)
 {
   std::string result;
   switch (from.type()) {
     case app::FontInfo::Type::Unknown:
       // Do nothing
       break;
-    case app::FontInfo::Type::Name:
-      result = from.name();
-      break;
-    case app::FontInfo::Type::File:
-      result = "file=" + from.name();
-      break;
-    case app::FontInfo::Type::System:
-      result = "system=" + from.name();
-      break;
+    case app::FontInfo::Type::Name:   result = from.name(); break;
+    case app::FontInfo::Type::File:   result = "file=" + from.name(); break;
+    case app::FontInfo::Type::System: result = "system=" + from.name(); break;
   }
   if (!result.empty()) {
     if (from.size() > 0.0f)

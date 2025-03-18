@@ -5,7 +5,7 @@
 // Read LICENSE.txt for more information.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "doc/tileset_io.h"
@@ -27,15 +27,13 @@ namespace doc {
 using namespace base::serialization;
 using namespace base::serialization::little_endian;
 
-bool write_tileset(std::ostream& os,
-                   const Tileset* tileset,
-                   CancelIO* cancel)
+bool write_tileset(std::ostream& os, const Tileset* tileset, CancelIO* cancel)
 {
   write32(os, tileset->id());
   write32(os, tileset->size());
   write_grid(os, tileset->grid());
 
-  for (tile_index ti=0; ti<tileset->size(); ++ti) {
+  for (tile_index ti = 0; ti < tileset->size(); ++ti) {
     if (cancel && cancel->isCanceled())
       return false;
 
@@ -46,7 +44,7 @@ bool write_tileset(std::ostream& os,
   write_user_data(os, tileset->userData());
   write_string(os, tileset->name());
 
-  for (tile_index ti=0; ti<tileset->size(); ++ti) {
+  for (tile_index ti = 0; ti < tileset->size(); ++ti) {
     if (cancel && cancel->isCanceled())
       return false;
 
@@ -64,13 +62,17 @@ Tileset* read_tileset(std::istream& is,
   const ObjectId id = read32(is);
   const tileset_index ntiles = read32(is);
   const Grid grid = read_grid(is);
-  auto tileset = new Tileset(sprite, grid, ntiles);
+  auto* tileset = new Tileset(sprite, grid, sprite ? ntiles : 0);
   if (setId)
     tileset->setId(id);
 
-  for (tileset_index ti=0; ti<ntiles; ++ti) {
-    ImageRef image(read_image(is, setId));
-    tileset->set(ti, image);
+  for (tileset_index ti = 0; ti < ntiles; ++ti) {
+    const ImageRef image(read_image(is, setId));
+
+    if (sprite)
+      tileset->set(ti, image);
+    else
+      tileset->add(image);
   }
 
   // Read extra version byte after tiles
@@ -87,7 +89,7 @@ Tileset* read_tileset(std::istream& is,
       if (ver >= TilesetSerialFormat::Ver3) {
         tileset->setName(read_string(is));
 
-        for (tileset_index ti=0; ti<ntiles; ++ti) {
+        for (tileset_index ti = 0; ti < ntiles; ++ti) {
           tileset->setTileData(ti, read_user_data(is, serial));
         }
       }
@@ -102,4 +104,4 @@ Tileset* read_tileset(std::istream& is,
   return tileset;
 }
 
-}
+} // namespace doc

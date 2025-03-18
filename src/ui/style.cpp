@@ -1,12 +1,12 @@
 // Aseprite UI Library
-// Copyright (C) 2020-2024  Igara Studio S.A.
+// Copyright (C) 2020-2025  Igara Studio S.A.
 // Copyright (C) 2017  David Capello
 //
 // This file is released under the terms of the MIT license.
 // Read LICENSE.txt for more information.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "ui/style.h"
@@ -16,7 +16,7 @@ namespace ui {
 // static
 gfx::Border Style::UndefinedBorder()
 {
-  return gfx::Border(-1, -1, -1, -1);
+  return gfx::Border(kUndefinedSide, kUndefinedSide, kUndefinedSide, kUndefinedSide);
 }
 
 // static
@@ -33,12 +33,12 @@ gfx::Size Style::MaxSize()
 
 Style::Style(const Style* base)
   : m_insertionPoint(0)
-  , m_margin(base ? base->margin(): Style::UndefinedBorder())
-  , m_border(base ? base->border(): Style::UndefinedBorder())
-  , m_padding(base ? base->padding(): Style::UndefinedBorder())
-  , m_minSize(base ? base->minSize(): Style::MinSize())
-  , m_maxSize(base ? base->maxSize(): Style::MaxSize())
-  , m_gap(base ? base->gap(): gfx::Size(0, 0))
+  , m_margin(base ? base->rawMargin() : Style::UndefinedBorder())
+  , m_border(base ? base->rawBorder() : Style::UndefinedBorder())
+  , m_padding(base ? base->rawPadding() : Style::UndefinedBorder())
+  , m_minSize(base ? base->minSize() : Style::MinSize())
+  , m_maxSize(base ? base->maxSize() : Style::MaxSize())
+  , m_gap(base ? base->gap() : gfx::Size(0, 0))
   , m_font(nullptr)
   , m_mnemonics(base ? base->mnemonics() : true)
 {
@@ -69,9 +69,9 @@ void Style::addLayer(const Layer& layer)
 {
   int i, j = int(m_layers.size());
 
-  for (i=m_insertionPoint; i<int(m_layers.size()); ++i) {
+  for (i = m_insertionPoint; i < int(m_layers.size()); ++i) {
     if (layer.type() == m_layers[i].type()) {
-      for (j=i+1; j<int(m_layers.size()); ++j) {
+      for (j = i + 1; j < int(m_layers.size()); ++j) {
         if (layer.type() != m_layers[j].type())
           break;
       }
@@ -81,9 +81,9 @@ void Style::addLayer(const Layer& layer)
 
   if (i < int(m_layers.size())) {
     if (layer.type() == Style::Layer::Type::kNewLayer)
-      m_insertionPoint = i+1;
+      m_insertionPoint = i + 1;
     else
-      m_layers.insert(m_layers.begin()+j, layer);
+      m_layers.insert(m_layers.begin() + j, layer);
   }
   else {
     m_layers.push_back(layer);

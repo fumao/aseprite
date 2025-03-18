@@ -1,5 +1,5 @@
 # Aseprite
-# Copyright (C) 2018-2024  Igara Studio S.A.
+# Copyright (C) 2018-2025  Igara Studio S.A.
 # Copyright (C) 2001-2018  David Capello
 
 # Generate a ui::Widget for each widget in a XML file
@@ -98,11 +98,11 @@ add_library(app-lib ${generated_files})
 # These specific-platform files should be in an external library
 # (e.g. "base" or "os").
 if(WIN32)
-  target_sources(app-lib PRIVATE font_path_win.cpp)
+  target_sources(app-lib PRIVATE fonts/font_path_win.cpp)
 elseif(APPLE)
-  target_sources(app-lib PRIVATE font_path_osx.mm)
+  target_sources(app-lib PRIVATE fonts/font_path_osx.mm)
 else()
-  target_sources(app-lib PRIVATE font_path_unix.cpp)
+  target_sources(app-lib PRIVATE fonts/font_path_unix.cpp)
 endif()
 
 # This defines a specific webp decoding utility function for using
@@ -190,6 +190,7 @@ if(ENABLE_SCRIPTING)
     commands/cmd_run_script.cpp
     commands/debugger.cpp
     script/app_command_object.cpp
+    script/app_clipboard_object.cpp
     script/app_fs_object.cpp
     script/app_object.cpp
     script/app_os_object.cpp
@@ -543,8 +544,10 @@ target_sources(app-lib PRIVATE
   file_system.cpp
   filename_formatter.cpp
   flatten.cpp
-  font_info.cpp
-  font_path.cpp
+  fonts/font_data.cpp
+  fonts/font_info.cpp
+  fonts/font_path.cpp
+  fonts/fonts.cpp
   gui_xml.cpp
   i18n/strings.cpp
   i18n/xml_translator.cpp
@@ -668,7 +671,6 @@ target_sources(app-lib PRIVATE
   ui/search_entry.cpp
   ui/select_accelerator.cpp
   ui/selection_mode_field.cpp
-  ui/skin/font_data.cpp
   ui/skin/skin_part.cpp
   ui/skin/skin_property.cpp
   ui/skin/skin_slider_property.cpp
@@ -752,6 +754,7 @@ target_link_libraries(app-lib
   tga-lib
   laf-gfx
   render-lib
+  laf-dlgs
   laf-os
   laf-text
   ui-lib
@@ -760,6 +763,7 @@ target_link_libraries(app-lib
   undo
   ${CMARK_LIBRARIES}
   ${TINYXML_LIBRARY}
+  ${TINYEXIF_LIBRARY}
   ${GIF_LIBRARIES}
   ${PNG_LIBRARIES}
   ${ZLIB_LIBRARIES}
@@ -768,7 +772,6 @@ target_link_libraries(app-lib
   archive_static
   fmt
   tinyexpr
-  TinyEXIFstatic
   qoi)
 
 if(ENABLE_WEBP AND WEBP_FOUND)

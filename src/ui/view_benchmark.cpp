@@ -5,7 +5,7 @@
 // Read LICENSE.txt for more information.
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "fmt/format.h"
@@ -23,24 +23,26 @@
 
 ui::View* g_view;
 
-void BM_ViewBase(benchmark::State& state) {
+void BM_ViewBase(benchmark::State& state)
+{
   auto mgr = ui::Manager::getDefault();
   mgr->layout();
   mgr->dontWaitEvents();
 
-  while (state.KeepRunning()) {
+  for (auto _ : state) {
     // Do nothing case
     mgr->generateMessages();
     mgr->dispatchMessages();
   }
 }
 
-void BM_ViewScrollListBox(benchmark::State& state) {
+void BM_ViewScrollListBox(benchmark::State& state)
+{
   auto mgr = ui::Manager::getDefault();
   auto* view = g_view;
 
   ui::ListBox list;
-  for (int i=0; i<1000; ++i)
+  for (int i = 0; i < 1000; ++i)
     list.addChild(new ui::ListItem(fmt::format("List Item {}", i)));
   view->attachToView(&list);
 
@@ -51,7 +53,7 @@ void BM_ViewScrollListBox(benchmark::State& state) {
   const auto max = view->getScrollableSize();
   int y = 0;
 
-  while (state.KeepRunning()) {
+  for (auto _ : state) {
     view->setViewScroll(gfx::Point(0, y));
     mgr->generateMessages();
     mgr->dispatchMessages();
@@ -62,8 +64,7 @@ void BM_ViewScrollListBox(benchmark::State& state) {
   }
 }
 
-BENCHMARK(BM_ViewBase)
-  ->Unit(benchmark::kMicrosecond);
+BENCHMARK(BM_ViewBase)->Unit(benchmark::kMicrosecond);
 
 BENCHMARK(BM_ViewScrollListBox)
   ->Args({ 0 })
@@ -89,8 +90,9 @@ int app_main(int argc, char* argv[])
   window.addChild(g_view = new ui::View);
   window.openWindow();
 
-  ::benchmark::Initialize(&argc, argv);
-  int status = ::benchmark::RunSpecifiedBenchmarks();
+  benchmark::Initialize(&argc, argv);
+  benchmark::RunSpecifiedBenchmarks();
+  benchmark::Shutdown();
 
-  return status;
+  return 0;
 }

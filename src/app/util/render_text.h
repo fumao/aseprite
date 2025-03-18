@@ -1,5 +1,5 @@
 // Aseprite
-// Copyright (C) 2024  Igara Studio S.A.
+// Copyright (C) 2024-2025  Igara Studio S.A.
 // Copyright (C) 2001-2015  David Capello
 //
 // This program is distributed under the terms of
@@ -18,29 +18,21 @@
 
 namespace app {
 
-  class Color;
-  class FontInfo;
+class Color;
+class FontInfo;
+namespace skin {
+class SkinTheme;
+}
 
-  text::FontRef get_font_from_info(
-    const FontInfo& fontInfo);
+text::TextBlobRef create_text_blob(const FontInfo& fontInfo, const std::string& text);
 
-  text::TextBlobRef create_text_blob(
-    const FontInfo& fontInfo,
-    const std::string& text);
+// Returns the exact bounds that are required to draw this TextBlob,
+// i.e. the image size that will be required in render_text_blob().
+gfx::Size get_text_blob_required_size(const text::TextBlobRef& blob);
 
-  // Returns the exact bounds that are required to draw this TextBlob,
-  // i.e. the image size that will be required in render_text_blob().
-  gfx::Size get_text_blob_required_size(
-    const text::TextBlobRef& blob);
+doc::ImageRef render_text_blob(const text::TextBlobRef& blob, gfx::Color color);
 
-  doc::ImageRef render_text_blob(
-    const text::TextBlobRef& blob,
-    gfx::Color color);
-
-  doc::ImageRef render_text(
-    const FontInfo& fontInfo,
-    const std::string& text,
-    gfx::Color color);
+doc::ImageRef render_text(const FontInfo& fontInfo, const std::string& text, gfx::Color color);
 
 } // namespace app
 

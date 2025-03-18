@@ -26,7 +26,7 @@ jobs:
         sudo apt-get update -qq
         sudo apt-get install -y \
           libpixman-1-dev libfreetype6-dev libharfbuzz-dev zlib1g-dev \
-          libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev
+          libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev
     - name: Install Skia
       if: ${{ matrix.ui == 'gui' }}
       shell: bash
@@ -43,7 +43,7 @@ jobs:
           unzip Skia-Linux-Release-x64.zip -d skia
         fi
     - name: ccache
-      uses: hendrikmuhs/ccache-action@v1
+      uses: hendrikmuhs/ccache-action@v1.2.17
       if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
       with:
         key: ${{ matrix.os }}-${{ matrix.ui }}-${{ matrix.scripting }}-${{ matrix.build_type }}
