@@ -110,7 +110,7 @@ private:
                                    nullptr);
     }
 
-    m_preview = os::instance()->makeRgbaSurface(w, h);
+    m_preview = os::System::instance()->makeRgbaSurface(w, h);
     convert_image_to_surface(image2.get(), palette, m_preview.get(), 0, 0, 0, 0, w, h);
 
     m_palId = palette->id();

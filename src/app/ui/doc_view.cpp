@@ -1,5 +1,5 @@
 // Aseprite
-// Copyright (C) 2018-2024  Igara Studio S.A.
+// Copyright (C) 2018-2025  Igara Studio S.A.
 // Copyright (C) 2001-2018  David Capello
 //
 // This program is distributed under the terms of
@@ -36,16 +36,15 @@
 #include "app/ui/workspace.h"
 #include "app/ui_context.h"
 #include "app/util/clipboard.h"
-#include "app/util/range_utils.h"
 #include "base/fs.h"
 #include "doc/color.h"
 #include "doc/layer.h"
 #include "doc/sprite.h"
 #include "fmt/format.h"
-#include "ui/accelerator.h"
 #include "ui/alert.h"
 #include "ui/menu.h"
 #include "ui/message.h"
+#include "ui/shortcut.h"
 #include "ui/system.h"
 #include "ui/view.h"
 
@@ -148,11 +147,11 @@ protected:
           KeyPtr rmb = keys->action(KeyAction::RightMouseButton, KeyContext::Any);
 
           // Convert action keys into mouse messages.
-          if (lmb->isPressed(msg, *keys) || rmb->isPressed(msg, *keys)) {
+          if (lmb->isPressed(msg) || rmb->isPressed(msg)) {
             MouseMessage mouseMsg(
               (msg->type() == kKeyDownMessage ? kMouseDownMessage : kMouseUpMessage),
               PointerType::Unknown,
-              (lmb->isPressed(msg, *keys) ? kButtonLeft : kButtonRight),
+              (lmb->isPressed(msg) ? kButtonLeft : kButtonRight),
               msg->modifiers(),
               mousePosInDisplay());
 
@@ -556,9 +555,8 @@ bool DocView::onCut(Context* ctx)
 bool DocView::onCopy(Context* ctx)
 {
   const ContextReader reader(ctx);
-  if (reader.site()->document() &&
-      static_cast<const Doc*>(reader.site()->document())->isMaskVisible() &&
-      reader.site()->image()) {
+  if (reader.site().document() &&
+      static_cast<const Doc*>(reader.site().document())->isMaskVisible() && reader.site().image()) {
     ctx->clipboard()->copy(reader);
     return true;
   }
@@ -594,14 +592,7 @@ bool DocView::onClear(Context* ctx)
   Doc* document = site.document();
   bool visibleMask = document->isMaskVisible();
 
-  CelList cels;
-  if (site.range().enabled()) {
-    cels = get_unique_cels_to_edit_pixels(site.sprite(), site.range());
-  }
-  else if (site.cel()) {
-    cels.push_back(site.cel());
-  }
-
+  CelList cels = site.selectedUniqueCelsToEditPixels();
   if (cels.empty()) // No cels to modify
     return false;
 
